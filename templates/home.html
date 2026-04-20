@@ -1,0 +1,1061 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<!-- Dashboard Section -->
+<div class="dashboard-container">
+    <!-- NUTRIAI Hero Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card bg-gradient-success text-white rounded-3 p-4 shadow">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="mb-2 text-start">Welcome to NUTRIAI! 🥗</h1>
+                        <p class="mb-0 text-start">Your intelligent nutrition & health companion for achieving your
+                            wellness goals.</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="quick-stats">
+                            <div class="stat-item text-end">
+                                <small class="d-block">Today's Goal</small>
+                                <h4 class="mb-0">Stay Healthy</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Status Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="health-status-card bg-gradient-info text-white rounded-3 p-4 shadow">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="mb-2 text-start">Your Health Status</h3>
+                        <p class="mb-0 text-start">Track your daily progress and achieve your health goals</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="health-score">
+                            <small class="d-block">Overall Score</small>
+                            <h2 class="mb-0" id="health-score-value">--</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="status-metric">
+                            <div class="metric-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="metric-info">
+                                <h6 class="mb-0" id="meals-completed">0/7</h6>
+                                <small>Meals Completed</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="status-metric">
+                            <div class="metric-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="metric-info">
+                                <h6 class="mb-0" id="calories-tracked">--</h6>
+                                <small>Calories Tracked</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="status-metric">
+                            <div class="metric-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="metric-info">
+                                <h6 class="mb-0" id="streak-days">0</h6>
+                                <small>Day Streak</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="status-metric">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metric-info">
+                                <h6 class="mb-0" id="weekly-progress">0%</h6>
+                                <small>Weekly Progress</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3 text-start">Quick Actions</h3>
+            <div class="quick-actions-grid">
+                <button class="quick-action-btn" onclick="openAIChat()">
+                    <i class="fas fa-robot"></i>
+                    <span class="text-center">Chat with AI</span>
+                </button>
+                <button class="quick-action-btn" onclick="openHealthAssessment()">
+                    <i class="fas fa-heartbeat"></i>
+                    <span class="text-center">Health Assessment</span>
+                </button>
+                <button class="quick-action-btn" onclick="openMealPlan()">
+                    <i class="fas fa-utensils"></i>
+                    <span class="text-center">View Meal Plan</span>
+                </button>
+                <button class="quick-action-btn" onclick="openProfile()">
+                    <i class="fas fa-user"></i>
+                    <span class="text-center">My Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="row g-4">
+        <!-- AI Chat Widget -->
+        <div class="col-lg-6">
+            <div class="dashboard-card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-robot me-2"></i>AI Nutrition Assistant</h5>
+                    <button class="btn btn-sm btn-success" onclick="expandAIChat()">Expand</button>
+                </div>
+                <div class="card-body p-0">
+                    <div id="mini-chat-container" style="height: 300px; overflow-y: auto;">
+                        <div class="mini-chat-messages p-3">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-comments fa-3x mb-3"></i>
+                                <p>Ask me anything about nutrition, diet, or health!</p>
+                                <button class="btn btn-success" onclick="openAIChat()">Start Chat</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Meal Plan -->
+        <div class="col-lg-6">
+            <div class="dashboard-card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Today's Meals</h5>
+                    <button class="btn btn-sm btn-outline-success" onclick="openMealPlan()">View Full Plan</button>
+                </div>
+                <div class="card-body">
+                    <div id="today-meals">
+                        <div class="text-center py-4">
+                            <i class="fas fa-utensils fa-3x mb-3 theme-text-muted"></i>
+                            <p class="text-muted">Complete your health assessment to get personalized meal
+                                recommendations</p>
+                            <button class="btn btn-success" onclick="openHealthAssessment()">Get Started</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Status -->
+        <div class="col-lg-4">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Health Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon bg-info">
+                                <i class="fas fa-weight"></i>
+                            </div>
+                            <div class="stat-info">
+                                <small class="text-muted">Weight</small>
+                                <h6 class="mb-0" id="weight-value">--</h6>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon bg-success">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="stat-info">
+                                <small class="text-muted">Calories</small>
+                                <h6 class="mb-0" id="calories-value">--</h6>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon bg-info">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <div class="stat-info">
+                                <small class="text-muted">BMI</small>
+                                <h6 class="mb-0" id="bmi-value">--</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Tips -->
+        <div class="col-lg-4">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Daily Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="tips-carousel">
+                        <div class="tip-item">
+                            <div class="tip-icon">💧</div>
+                            <p class="mb-0">Drink at least 8 glasses of water daily to stay hydrated</p>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🥗</div>
+                            <p class="mb-0">Include vegetables in every meal for essential nutrients</p>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon">🏃</div>
+                            <p class="mb-0">30 minutes of daily exercise boosts metabolism</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-lg-4">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <div class="activity-dot bg-success"></div>
+                            <div class="activity-content">
+                                <small class="text-muted">Today</small>
+                                <p class="mb-0">Logged in to dashboard</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot bg-info"></div>
+                            <div class="activity-content">
+                                <small class="text-muted">Recently</small>
+                                <p class="mb-0">Profile updated</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="aiChatModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">AI Nutrition Assistant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe src="/ai-chat" style="width: 100%; height: 600px; border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="healthAssessmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Health Assessment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <iframe src="/health-assessment" style="width: 100%; height: 500px; border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .welcome-card {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+
+    .health-status-card {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .health-status-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+
+        100% {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+    }
+
+    .health-score {
+        position: relative;
+        z-index: 2;
+    }
+
+    .health-score h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .status-metric {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+        backdrop-filter: blur(10px);
+    }
+
+    .status-metric:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .metric-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .status-metric:hover .metric-icon {
+        transform: rotate(360deg) scale(1.1);
+        background: rgba(255, 255, 255, 0.35);
+    }
+
+    .metric-info {
+        flex: 1;
+        text-align: left;
+    }
+
+    .metric-info h6 {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .metric-info small {
+        font-size: 0.85rem;
+        opacity: 0.95;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Add loading animation for health score */
+    .health-score-value.loading {
+        animation: loadingPulse 1s infinite;
+    }
+
+    @keyframes loadingPulse {
+        0% {
+            opacity: 0.5;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0.5;
+        }
+    }
+
+    .welcome-card h1 {
+        text-align: left;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .welcome-card p {
+        text-align: left;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        justify-items: center;
+    }
+
+    .quick-actions-grid h3 {
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Ensure proper alignment for all sections */
+    .row {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+    }
+
+    .col-lg-6,
+    .col-lg-4,
+    .col-md-8,
+    .col-md-4,
+    .col-12 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* Fix any remaining centering issues */
+    .text-center p {
+        text-align: center !important;
+    }
+
+    .text-center h5,
+    .text-center h6 {
+        text-align: center !important;
+    }
+
+    /* Ensure buttons are properly aligned */
+    .btn {
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quick-action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #495057;
+        text-align: center;
+        min-height: 120px;
+    }
+
+    .quick-action-btn:hover {
+        border-color: #28a745;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+        color: #28a745;
+    }
+
+    .quick-action-btn i {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    .quick-action-btn span {
+        font-size: 0.9rem;
+        font-weight: 500;
+        line-height: 1.2;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .dashboard-card .card-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        border-radius: 12px 12px 0 0;
+        padding: 1rem 1.5rem;
+        text-align: left;
+    }
+
+    .dashboard-card .card-header h5 {
+        margin: 0;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .dashboard-card .card-body {
+        padding: 1.5rem;
+        text-align: left;
+    }
+
+    .dashboard-card .card-body h5 {
+        text-align: left;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .dashboard-card .card-body h6 {
+        text-align: left;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-card .card-body p {
+        text-align: left;
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-card .card-body .text-center {
+        text-align: center !important;
+    }
+
+    .dashboard-card .card-body .text-end {
+        text-align: right !important;
+    }
+
+    .stat-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-align: left;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .stat-info {
+        flex: 1;
+        text-align: left;
+    }
+
+    .stat-info h6 {
+        font-weight: 600;
+        margin-bottom: 0;
+        text-align: left;
+    }
+
+    .tips-carousel {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        text-align: left;
+    }
+
+    .tip-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .tip-item p {
+        margin-bottom: 0;
+        text-align: left;
+        line-height: 1.4;
+    }
+
+    .activity-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        text-align: left;
+    }
+
+    .activity-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-top: 4px;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+        text-align: left;
+    }
+
+    .activity-content small {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-content p {
+        margin-bottom: 0;
+        text-align: left;
+    }
+
+    .mini-chat-messages {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<script>
+    function openAIChat() {
+        window.location.href = '/ai-chat';
+    }
+
+    function openHealthAssessment() {
+        window.location.href = '/health-assessment';
+    }
+
+    function openMealPlan() {
+        // Get the latest assessment for the current user
+        fetch('/api/latest-assessment')
+            .then(response => response.json())
+            .then(data => {
+                if (data.assessment_id) {
+                    window.location.href = `/health-calendar/${data.assessment_id}`;
+                } else {
+                    window.location.href = '/health-assessment';
+                }
+            })
+            .catch(error => {
+                window.location.href = '/health-assessment';
+            });
+    }
+
+    function openProfile() {
+        window.location.href = '/profile';
+    }
+
+    function expandAIChat() {
+        openAIChat();
+    }
+
+    // Load today's meals if available
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/today-meals')
+            .then(response => response.json())
+            .then(data => {
+                if (data.meals) {
+                    updateTodayMeals(data.meals);
+                }
+            })
+            .catch(error => console.log('No meals found'));
+
+        // Load health status data
+        loadHealthStatus();
+    });
+
+    function updateTodayMeals(meals) {
+        const container = document.getElementById('today-meals');
+        if (meals.breakfast || meals.lunch || meals.dinner) {
+            container.innerHTML = `
+            <div class="meal-schedule">
+                ${meals.breakfast ? `<div class="meal-item"><strong>Breakfast:</strong> ${meals.breakfast}</div>` : ''}
+                ${meals.lunch ? `<div class="meal-item"><strong>Lunch:</strong> ${meals.lunch}</div>` : ''}
+                ${meals.dinner ? `<div class="meal-item"><strong>Dinner:</strong> ${meals.dinner}</div>` : ''}
+                ${meals.snack ? `<div class="meal-item"><strong>Snack:</strong> ${meals.snack}</div>` : ''}
+            </div>
+        `;
+        }
+    }
+
+    function loadHealthStatus() {
+        // Fetch health status data from API
+        fetch('/api/health-status')
+            .then(response => response.json())
+            .then(data => {
+                updateHealthStatusDisplay(data);
+            })
+            .catch(error => {
+                // Fallback to default values if API fails
+                updateHealthStatusDisplay({
+                    meals_completed: 0,
+                    total_meals: 7,
+                    calories_tracked: 0,
+                    target_calories: 2000,
+                    streak_days: 0,
+                    weekly_progress: 0,
+                    health_score: 0
+                });
+            });
+    }
+
+    function updateHealthStatusDisplay(data) {
+        // Update weight
+        const weightElement = document.getElementById('weight-value');
+        if (data.weight) {
+            weightElement.textContent = `${data.weight} kg`;
+        } else {
+            weightElement.textContent = '--';
+        }
+
+        // Update calories
+        const caloriesElement = document.getElementById('calories-value');
+        if (data.calories_tracked && data.target_calories) {
+            caloriesElement.textContent = `${data.calories_tracked}/${data.target_calories}`;
+        } else if (data.calories) {
+            caloriesElement.textContent = `${data.calories} kcal`;
+        } else {
+            caloriesElement.textContent = '--';
+        }
+
+        // Update BMI
+        const bmiElement = document.getElementById('bmi-value');
+        if (data.bmi) {
+            bmiElement.textContent = data.bmi;
+        } else {
+            bmiElement.textContent = '--';
+        }
+
+        // Add loading animation to health score
+        const healthScore = document.getElementById('health-score-value');
+        healthScore.classList.add('loading');
+
+        // Update meals completed with animation
+        const mealsCompleted = document.getElementById('meals-completed');
+        const currentMeals = parseInt(mealsCompleted.textContent.split('/')[0]) || 0;
+        const newMeals = data.meals_completed || 0;
+
+        if (currentMeals !== newMeals) {
+            animateValue(mealsCompleted, currentMeals, newMeals, 500);
+        } else {
+            mealsCompleted.textContent = `${data.meals_completed || 0}/${data.total_meals || 7}`;
+        }
+
+        // Update calories tracked
+        const caloriesTracked = document.getElementById('calories-tracked');
+        if (data.calories_tracked && data.target_calories) {
+            caloriesTracked.textContent = `${data.calories_tracked}/${data.target_calories}`;
+        } else {
+            caloriesTracked.textContent = '--';
+        }
+
+        // Update streak days with animation
+        const streakDays = document.getElementById('streak-days');
+        const currentStreak = parseInt(streakDays.textContent) || 0;
+        const newStreak = data.streak_days || 0;
+
+        if (currentStreak !== newStreak) {
+            animateValue(streakDays, currentStreak, newStreak, 500);
+            if (newStreak > currentStreak) {
+                showAchievement('Streak increased! 🔥');
+            }
+        } else {
+            streakDays.textContent = data.streak_days || 0;
+        }
+
+        // Update weekly progress with animation
+        const weeklyProgress = document.getElementById('weekly-progress');
+        const currentProgress = parseInt(weeklyProgress.textContent) || 0;
+        const newProgress = data.weekly_progress || 0;
+
+        if (currentProgress !== newProgress) {
+            animateValue(weeklyProgress, currentProgress, newProgress, 500);
+        } else {
+            weeklyProgress.textContent = `${data.weekly_progress || 0}%`;
+        }
+
+        // Update overall health score with animation
+        setTimeout(() => {
+            const score = calculateHealthScore(data);
+            const currentScore = parseInt(healthScore.textContent) || 0;
+
+            animateValue(healthScore, currentScore, score, 1000);
+
+            // Add color coding based on score
+            setTimeout(() => {
+                healthScore.classList.remove('loading');
+                if (score >= 80) {
+                    healthScore.style.color = '#28a745'; // Green
+                    if (score === 100) showAchievement('Perfect Score! 🏆');
+                } else if (score >= 60) {
+                    healthScore.style.color = '#ffc107'; // Yellow
+                } else {
+                    healthScore.style.color = '#dc3545'; // Red
+                }
+            }, 1000);
+        }, 500);
+    }
+
+    function animateValue(element, start, end, duration) {
+        const range = end - start;
+        const increment = range / (duration / 16);
+        let current = start;
+
+        const timer = setInterval(() => {
+            current += increment;
+            if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                current = end;
+                clearInterval(timer);
+            }
+            element.textContent = Math.round(current);
+        }, 16);
+    }
+
+    function showAchievement(message) {
+        // Create achievement notification
+        const achievement = document.createElement('div');
+        achievement.className = 'achievement-notification';
+        achievement.innerHTML = `
+        <div class="achievement-content">
+            <div class="achievement-icon">🎉</div>
+            <div class="achievement-text">${message}</div>
+        </div>
+    `;
+
+        // Add styles for achievement notification
+        achievement.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 9999;
+        animation: slideInRight 0.5s ease-out;
+        max-width: 300px;
+    `;
+
+        document.body.appendChild(achievement);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            achievement.style.animation = 'slideOutRight 0.5s ease-out';
+            setTimeout(() => {
+                document.body.removeChild(achievement);
+            }, 500);
+        }, 3000);
+    }
+
+    // Add CSS animations for achievements
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    .achievement-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .achievement-icon {
+        font-size: 1.5rem;
+    }
+    
+    .achievement-text {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+`;
+    document.head.appendChild(style);
+
+    function calculateHealthScore(data) {
+        let score = 0;
+        let totalWeight = 0;
+
+        // Meals completion (40% weight)
+        if (data.meals_completed && data.total_meals) {
+            const completionRate = (data.meals_completed / data.total_meals) * 100;
+            score += (completionRate / 100) * 40;
+        }
+        totalWeight += 40;
+
+        // Calories tracking (20% weight)
+        if (data.calories_tracked && data.target_calories) {
+            const calorieRate = Math.min(data.calories_tracked / data.target_calories, 1);
+            score += calorieRate * 20;
+        }
+        totalWeight += 20;
+
+        // Streak days (20% weight)
+        if (data.streak_days) {
+            const streakScore = Math.min((data.streak_days / 7) * 100, 100);
+            score += (streakScore / 100) * 20;
+        }
+        totalWeight += 20;
+
+        // Weekly progress (20% weight)
+        if (data.weekly_progress) {
+            score += (data.weekly_progress / 100) * 20;
+        }
+        totalWeight += 20;
+
+        // Normalize score to 0-100 scale
+        return Math.round(Math.min(score, 100));
+    }
+
+    // Auto-refresh health status every 30 seconds
+    setInterval(loadHealthStatus, 30000);
+</script>
+
+{% else %}
+<!-- Landing Page for non-authenticated users -->
+<section class="hero-section py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-success mb-4">Your Personal AI Nutritionist</h1>
+                <p class="lead mb-4">Get personalized meal plans, nutrition advice, and health recommendations powered
+                    by artificial intelligence.</p>
+                <a href="/register" class="btn btn-success btn-lg me-3">Get Started</a>
+                <a href="/login" class="btn btn-outline-success btn-lg">Login</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ url_for('static', filename='images/nutri3.jpg') }}" alt="Healthy Food"
+                    class="img-fluid rounded-3 shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-plus fa-2x text-success"></i>
+                        </div>
+                        <h4>1. Create Profile</h4>
+                        <p>Sign up and tell us about your health goals, dietary preferences, and lifestyle.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 80px; height: 80px;">
+                            <i class="fas fa-utensils fa-2x text-success"></i>
+                        </div>
+                        <h4>2. Get Recommendations</h4>
+                        <p>Receive personalized meal plans and nutrition advice based on your profile.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 80px; height: 80px;">
+                            <i class="fas fa-robot fa-2x text-success"></i>
+                        </div>
+                        <h4>3. Chat with AI</h4>
+                        <p>Get instant answers to your nutrition questions from our AI assistant.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-success text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Transform Your Health?</h2>
+        <p class="lead mb-4">Join thousands of users who have improved their nutrition with our AI-powered platform.</p>
+        <a href="/register" class="btn btn-light btn-lg px-4 me-2">Get Started Free</a>
+        <a href="/about" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

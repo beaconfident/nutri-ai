@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-robot text-success me-2"></i>AI Nutrition Assistant</h4>
+                </div>
+                
+                <!-- Chat Messages -->
+                <div class="card-body chat-container" style="height: 60vh; overflow-y: auto;">
+                    {% if not chats %}
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-comments fa-3x mb-3"></i>
+                            <p class="mb-0">Ask me anything about nutrition, diet plans, or healthy eating!</p>
+                        </div>
+                    {% else %}
+                        {% for c in chats %}
+                            <!-- User Message -->
+                            <div class="d-flex justify-content-end mb-3">
+                                <div class="bg-success text-white p-3 rounded-3" style="max-width: 75%;">
+                                    <p class="mb-0">{{ c.user_message }}</p>
+                                    <small class="d-block text-white-50 text-end">You</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Bot Response -->
+                            <div class="d-flex justify-content-start mb-4">
+                                <div class="bg-light p-3 rounded-3" style="max-width: 75%;">
+                                    <p class="mb-0">{{ c.bot_message|replace('\n', '<br>')|safe }}</p>
+                                    <small class="d-block text-muted">AI Assistant</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="card-footer bg-white border-0 pt-3">
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   name="message" 
+                                   placeholder="Ask me about nutrition..." 
+                                   required>
+                            <button class="btn btn-success px-4" type="submit">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </div>
+                        <div class="form-text mt-2">
+                            <small>Ask about meal plans, nutrition advice, or healthy recipes.</small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-container {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+.chat-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background: #28a745;
+    border-radius: 10px;
+}
+
+/* Message bubbles */
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+/* Make sure the chat scrolls to bottom on load */
+</style>
+
+<script>
+// Scroll to bottom of chat on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const chatContainer = document.querySelector('.chat-container');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // Focus the input field
+    const messageInput = document.querySelector('input[name="message"]');
+    if (messageInput) {
+        messageInput.focus();
+    }
+});
+
+// Form validation
+(function() {
+    'use strict';
+    var forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+</script>
+{% endblock %}

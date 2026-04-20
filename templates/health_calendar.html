@@ -1,0 +1,217 @@
+<!-- templates/health_calendar.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2>Your Health Journey</h2>
+            <p class="lead">Your personalized meal plan until {{ target_date.strftime('%B %d, %Y') }}</p>
+
+            <!-- Download Button -->
+            <div class="mb-3">
+                <a href="{{ url_for('download_diet_plan', assessment_id=assessment.id) }}" class="btn btn-success"
+                    download>
+                    <i class="fas fa-download me-2"></i>Download Diet Plan (PDF)
+                </a>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>{{ days_remaining }} days</strong> remaining in your plan
+            </div>
+            <!-- Progress Bar -->
+            <div class="progress mb-4" style="height: 25px;">
+                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar"
+                    style="width: {{ progress_percent }}%;" aria-valuenow="{{ progress_percent }}" aria-valuemin="0"
+                    aria-valuemax="100">
+                    {{ progress_percent }}% Complete
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Calendar -->
+    <!-- Weekly Plans -->
+    {% for week_num, week_plans in weekly_plans.items() %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Week {{ week_num }} - {{ week_plans[0].date.strftime('%B %d') }} to {{
+                week_plans[-1].date.strftime('%B %d, %Y') }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                {% for plan in week_plans %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm {% if plan.date == today %}border-success border-2{% endif %}">
+                        <div
+                            class="card-header {% if plan.date == today %}bg-success text-white{% else %}bg-light{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    {{ plan.date.strftime('%A') }}
+                                    <small class="d-block">{{ plan.date.strftime('%b %d') }}</small>
+                                </h5>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input plan-completed" type="checkbox"
+                                        data-plan-id="{{ plan.id }}" id="completed-{{ plan.id }}" {% if plan.completed
+                                        %}checked{% endif %}>
+                                    <label class="form-check-label" for="completed-{{ plan.id }}">
+                                        <i class="fas fa-check-circle me-1"></i> Day Complete
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ plan.date.strftime('%A, %B %d') }}</h5>
+                            {% if plan.date == today %}
+                            <span class="badge bg-success mb-2">Today</span>
+                            {% endif %}
+                            <div class="mb-3">
+                                <h6 class="text-primary"><i class="fas fa-sun me-2"></i>Breakfast</h6>
+                                <p class="ms-4">{{ plan.meals.breakfast }}</p>
+
+                                <h6 class="text-primary mt-3"><i class="fas fa-utensils me-2"></i>Lunch</h6>
+                                <p class="ms-4">{{ plan.meals.lunch }}</p>
+
+                                <h6 class="text-primary mt-3"><i class="fas fa-drumstick-bite me-2"></i>Dinner</h6>
+                                <p class="ms-4">{{ plan.meals.dinner }}</p>
+
+                                <h6 class="text-primary mt-3"><i class="fas fa-apple-alt me-2"></i>Snack</h6>
+                                <p class="ms-4">{{ plan.meals.snack }}</p>
+
+                                <div class="mt-3 p-2 bg-light rounded d-flex align-items-center">
+                                    <i class="fas fa-tint text-primary me-2"></i>
+                                    <span>Water Intake: <strong>{{ plan.meals.water_intake }}</strong></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="notes-{{ plan.id }}" class="form-label small text-muted">Notes:</label>
+                                <textarea class="form-control notes-textarea" id="notes-{{ plan.id }}"
+                                    data-plan-id="{{ plan.id }}" rows="2"
+                                    placeholder="Add your notes here...">{{ plan.notes or '' }}</textarea>
+                            </div>
+
+                            {% if plan.notes %}
+                            <div class="alert alert-info py-1 px-2 small mb-0">
+                                <i class="fas fa-info-circle me-1"></i> {{ plan.notes|truncate(50) }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Bottom Update Button -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('health_assessment') }}" class="btn btn-outline-warning btn-lg">
+                <i class="fas fa-edit me-2"></i>Update Your Diet Plan
+            </a>
+            <p class="text-muted mt-2">Want different meals? Update your preferences to regenerate your plan</p>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
+    <div id="successToast" class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive"
+        aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="toastMessage">Changes saved successfully!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // Initialize toasts
+    var toastEl = document.getElementById('successToast');
+    var toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+
+    // Handle completion toggles
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toggle day completion
+        document.querySelectorAll('.plan-completed').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const planId = this.dataset.planId;
+                const isChecked = this.checked;
+
+                fetch(`/toggle-completion/${planId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ completed: isChecked })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('toastMessage').textContent =
+                                isChecked ? 'Day marked as completed!' : 'Day marked as not completed';
+                            toast.show();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        this.checked = !this.checked; // Revert the checkbox if there's an error
+                    });
+            });
+        });
+
+        // Debounce function for notes
+        const debounce = (func, delay) => {
+            let debounceTimer;
+            return function () {
+                const context = this;
+                const args = arguments;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => func.apply(context, args), delay);
+            };
+        };
+
+        // Handle notes saving with debounce
+        document.querySelectorAll('.notes-textarea').forEach(textarea => {
+            textarea.addEventListener('input', debounce(function () {
+                const planId = this.dataset.planId;
+                const notes = this.value;
+
+                fetch(`/save-notes/${planId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ notes: notes })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('toastMessage').textContent = 'Notes saved!';
+                            toast.show();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }, 1000)); // 1 second delay
+        });
+    });
+</script>
+{% endblock %}

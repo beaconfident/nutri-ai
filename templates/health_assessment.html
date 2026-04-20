@@ -1,0 +1,180 @@
+<!-- templates/health_assessment.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-white py-3">
+                    <h2 class="mb-0 text-center">Health Assessment</h2>
+                    <p class="text-center text-muted mb-0">Help us understand your health profile to provide personalized recommendations</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('health_assessment') }}" class="needs-validation" novalidate>
+                        <h5 class="mb-4">Personal Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="age" class="form-label">Age <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="age" name="age" min="1" max="120" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid age.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="" selected disabled>Select gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select your gender.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="weight" class="form-label">Weight (kg) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" class="form-control" id="weight" name="weight" min="30" max="300" required>
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please enter a valid weight (30-300 kg).
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="height" class="form-label">Height (cm) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" class="form-control" id="height" name="height" min="100" max="250" required>
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please enter a valid height (100-250 cm).
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="target_weight" class="form-label">Target Weight (kg) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" class="form-control" id="target_weight" name="target_weight" min="30" max="300" required>
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please enter a valid target weight (30-300 kg).
+                                </div>
+                                <small class="text-muted">Your current weight is used by default.</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="activity_level" class="form-label">Activity Level <span class="text-danger">*</span></label>
+                                <select class="form-select" id="activity_level" name="activity_level" required>
+                                    <option value="" selected disabled>Select activity level</option>
+                                    <option value="sedentary">Sedentary (little or no exercise)</option>
+                                    <option value="light">Lightly active (light exercise 1-3 days/week)</option>
+                                    <option value="moderate">Moderately active (moderate exercise 3-5 days/week)</option>
+                                    <option value="active">Very active (hard exercise 6-7 days/week)</option>
+                                    <option value="very_active">Extremely active (very hard exercise & physical job)</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select your activity level.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="goal" class="form-label">Goal <span class="text-danger">*</span></label>
+                                <select class="form-select" id="goal" name="goal" required>
+                                    <option value="" selected disabled>Select your goal</option>
+                                    <option value="weight_loss">Lose Weight</option>
+                                    <option value="maintenance">Maintain Weight</option>
+                                    <option value="muscle_gain">Gain Muscle</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select your goal.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="disease_type" class="form-label">Health Condition</label>
+                                <select class="form-select" id="disease_type" name="disease_type">
+                                    <option value="None" selected>No specific condition</option>
+                                    <option value="Diabetes">Diabetes</option>
+                                    <option value="Hypertension">Hypertension</option>
+                                    <option value="Obesity">Obesity</option>
+                                    <option value="Heart Disease">Heart Disease</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="preferred_cuisine" class="form-label">Preferred Cuisine</label>
+                                <select class="form-select" id="preferred_cuisine" name="preferred_cuisine">
+                                    <option value="Any" selected>No preference</option>
+                                    <option value="Indian">Indian</option>
+                                    <option value="Chinese">Chinese</option>
+                                    <option value="Italian">Italian</option>
+                                    <option value="Mexican">Mexican</option>
+                                    <option value="American">American</option>
+                                    <option value="Mediterranean">Mediterranean</option>
+                                    <option value="Thai">Thai</option>
+                                    <option value="Japanese">Japanese</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="allergies" class="form-label">Food Allergies (comma-separated)</label>
+                                <input type="text" class="form-control" id="allergies" name="allergies" placeholder="e.g., peanuts, gluten, dairy, shellfish">
+                                <small class="text-muted">Enter any food allergies you have, separated by commas.</small>
+                            </div>
+                            
+                            <div class="col-12 mt-4">
+                                <div class="d-grid">
+                                    <button class="btn btn-primary btn-lg" type="submit">Generate My Plan</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation')
+    
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                
+                form.classList.add('was-validated')
+            }, false)
+        })
+})();
+
+// Set default target weight to current weight
+document.addEventListener('DOMContentLoaded', function() {
+    const weightInput = document.getElementById('weight');
+    const targetWeightInput = document.getElementById('target_weight');
+    
+    weightInput.addEventListener('change', function() {
+        if (!targetWeightInput.value) {
+            targetWeightInput.value = this.value;
+        }
+    });
+});
+</script>
+{% endblock %}

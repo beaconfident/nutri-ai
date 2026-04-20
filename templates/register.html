@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <!-- Registration Form -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold text-success">Create Account</h2>
+                        <p class="text-muted">Join NutriAI and start your health journey today</p>
+                    </div>
+                    
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter any name you like" required>
+                                    <div class="invalid-feedback">
+                                        Please choose a username.
+                                    </div>
+                                </div>
+                                <div class="form-text">You can use any name - spaces and special characters are allowed.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Your email address" required>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid email.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    Please enter a password.
+                                </div>
+                            </div>
+                            <div class="form-text">Use 8 or more characters with a mix of letters, numbers & symbols.</div>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" class="text-success text-decoration-none">Terms of Service</a> and 
+                                <a href="#" class="text-success text-decoration-none">Privacy Policy</a>
+                            </label>
+                            <div class="invalid-feedback">
+                                You must agree to the terms and conditions.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-success btn-lg">Create Account</button>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{{ url_for('login') }}" class="text-success fw-bold text-decoration-none">Sign in</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="col-lg-6 ps-lg-5 mt-5 mt-lg-0">
+            <h2 class="fw-bold mb-4">Why Join NutriAI?</h2>
+            
+            <div class="d-flex mb-4">
+                <div class="flex-shrink-0 me-4">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="fas fa-utensils text-success fa-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="fw-bold">Personalized Nutrition</h5>
+                    <p class="text-muted mb-0">Get meal plans tailored to your dietary needs and health goals.</p>
+                </div>
+            </div>
+            
+            <div class="d-flex mb-4">
+                <div class="flex-shrink-0 me-4">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="fas fa-robot text-success fa-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="fw-bold">AI-Powered Assistant</h5>
+                    <p class="text-muted mb-0">24/7 access to our AI nutritionist for all your health queries.</p>
+                </div>
+            </div>
+            
+            <div class="d-flex mb-4">
+                <div class="flex-shrink-0 me-4">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="fas fa-chart-line text-success fa-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="fw-bold">Track Your Progress</h5>
+                    <p class="text-muted mb-0">Monitor your health metrics and see your improvement over time.</p>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm mt-5 p-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <i class="fas fa-quote-left fa-2x text-success opacity-25"></i>
+                    </div>
+                    <div>
+                        <p class="fst-italic mb-1">"NutriAI helped me transform my eating habits and achieve my weight loss goals. The personalized meal plans made it so easy!"</p>
+                        <div class="d-flex align-items-center">
+                            <img src="https://randomuser.me/api/portraits/women/42.jpg" class="rounded-circle me-2" width="32" height="32" alt="User">
+                            <div>
+                                <p class="mb-0 fw-bold small">Sarah Johnson</p>
+                                <p class="mb-0 text-muted small">NutriAI Member</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript for form validation and password toggle -->
+<script>
+// Toggle password visibility
+document.querySelectorAll('.toggle-password').forEach(button => {
+    button.addEventListener('click', function() {
+        const input = this.previousElementSibling;
+        const icon = this.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+});
+
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+</script>
+{% endblock %}

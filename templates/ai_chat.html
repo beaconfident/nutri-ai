@@ -1,0 +1,815 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; height: 100vh; background-color: #fff;">
+    <!-- Header -->
+    <div style="border-bottom: 1px solid #d1d5db; padding: 0.75rem 1rem; background-color: #fff; display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+        <div style="display:flex; flex-direction:column;">
+            <h1 style="margin: 0; font-size: 1.25rem; font-weight: 600;">AI Nutrition Assistant</h1>
+            <p style="margin: 0.15rem 0 0 0; color: #6b7280; font-size: 0.8rem;">Powered by Advanced AI</p>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button id="history-btn" title="Open chat history" style="padding:0.5rem 0.75rem; border-radius:0.5rem; border:1px solid #e5e7eb; background:#fff; cursor:pointer;">History</button>
+        </div>
+    </div>
+    
+    <!-- Chat Container -->
+    <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 1.5rem 0; background:#f7f7fb;">
+        <div id="chat-messages" style="flex: 1; max-width: 48rem; margin: 0 auto; width: 100%; padding: 0 1rem; height: calc(100vh - 170px); overflow-y:auto;">
+            <!-- Initial Welcome Message -->
+            <div style="display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column; color: #6b7280;">
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🥗</div>
+                    <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem; color: #1f2937;">Welcome to Your AI Nutrition Assistant</h2>
+                    <p style="margin: 0; color: #6b7280; max-width: 400px;">Ask me anything about nutrition, health, diet plans, fitness, or wellness. I'm here to help you achieve your health goals!</p>
+                    <p style="margin: 1rem 0 0 0; color: #10b981; font-size: 0.9rem; font-weight: 500;">
+                        <i class="fas fa-history me-1"></i>
+                        Your conversations are automatically saved to history
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Input Area -->
+    <div style="border-top: 1px solid #d1d5db; background-color: #fff; padding: 1.5rem; display: flex; justify-content: center;">
+        <div style="max-width: 48rem; width: 100%;">
+            <form id="chat-form" style="display: flex; gap: 0.5rem; align-items:center;">
+                <button type="button" id="mic-btn" title="Use microphone" 
+                        style="padding:0.5rem 0.75rem; border-radius:50%; border:1px solid #d1d5db; background:#fff; cursor:pointer;">
+                    🎤
+                </button>
+                <input type="text" id="user-message" 
+                       placeholder="Ask about nutrition, diet, health, or fitness..." 
+                       autocomplete="off" 
+                       style="flex: 1; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 2rem; font-size: 1rem; outline: none; transition: border-color 0.2s;"
+                       onmouseover="this.style.borderColor='#9ca3af'"
+                       onmouseout="this.style.borderColor='#d1d5db'"
+                       onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'"
+                       onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                       required>
+                <button type="submit" id="send-btn"
+                        style="padding: 0.75rem 1.5rem; background-color: #10b981; color: white; border: none; border-radius: 2rem; cursor: pointer; font-weight: 500; transition: background-color 0.2s;"
+                        onmouseover="this.style.backgroundColor='#059669'"
+                        onmouseout="this.style.backgroundColor='#10b981'">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+                <button type="button" id="tts-btn" title="Speak latest AI response" 
+                        style="padding:0.5rem 0.75rem; border-radius:50%; border:1px solid #d1d5db; background:#fff; cursor:pointer; margin-left:0.25rem;">
+                    🔊
+                </button>
+            </form>
+            <p style="margin: 0.75rem 0 0 0; color: #9ca3af; font-size: 0.75rem; text-align: center;">
+                I can help with nutrition, diet plans, health questions, fitness advice, and wellness tips.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- History Sidebar -->
+<div id="history-sidebar" style="position:fixed; left:0; top:0; bottom:0; width:320px; background:#fff; box-shadow:2px 0 8px rgba(0,0,0,0.08); transform:translateX(-110%); transition:transform 0.25s ease; z-index:1200; overflow:auto;">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem; border-bottom:1px solid #eef2f7;">
+        <strong style="font-size:1rem;">Chat History</strong>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button id="show-all-history" style="background:#10b981; color:#fff; border:none; border-radius:0.5rem; padding:0.3rem 0.8rem; font-size:0.85rem; cursor:pointer;">Show all</button>
+            <button id="close-history" style="background:none;border:none;cursor:pointer;font-size:1.1rem;">✕</button>
+        </div>
+    </div>
+    <div id="history-list" style="padding:0.5rem; display:flex; flex-direction:column; gap:0.25rem;"></div>
+</div>
+
+<!-- Sidebar overlay -->
+<div id="history-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.25); opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:1100;"></div>
+
+<style>
+    html, body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+    }
+    
+    /* Chat message styles - ChatGPT style */
+    .message-row {
+        display: flex;
+        padding: 1rem;
+        max-width: 48rem;
+        margin: 0 auto;
+        width: 100%;
+    }
+    
+    .message {
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        word-wrap: break-word;
+        line-height: 1.5;
+    }
+    
+    .user-message-row {
+        justify-content: flex-end;
+    }
+    
+    .user-message {
+        background-color: #10b981;
+        color: white;
+        margin-left: auto;
+        max-width: 70%;
+    }
+    
+    .ai-message-row {
+        justify-content: flex-start;
+    }
+    
+    .ai-message {
+        background-color: #f3f4f6;
+        color: #1f2937;
+        margin-right: auto;
+        max-width: 85%;
+    }
+    
+    /* Table styles for diet plans and structured content */
+    .ai-message table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+        font-size: 0.95rem;
+    }
+    
+    .ai-message table th {
+        background-color: #10b981;
+        color: white;
+        padding: 0.75rem;
+        text-align: left;
+        font-weight: 600;
+    }
+    
+    .ai-message table td {
+        border: 1px solid #e5e7eb;
+        padding: 0.75rem;
+    }
+    
+    .ai-message table tr:nth-child(even) {
+        background-color: #f9fafb;
+    }
+    
+    .ai-message table tr:hover {
+        background-color: #f3f4f6;
+    }
+    
+    /* List styles */
+    .ai-message ul, .ai-message ol {
+        margin: 0.75rem 0;
+        padding-left: 1.5rem;
+    }
+    
+    .ai-message li {
+        margin: 0.5rem 0;
+    }
+    
+    /* Bold text */
+    .ai-message strong, .ai-message b {
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    /* Code blocks */
+    .ai-message code {
+        background-color: #e5e7eb;
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.25rem;
+        font-family: 'Monaco', 'Courier New', monospace;
+    }
+    
+    /* Typing indicator */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #9ca3af;
+        border-radius: 50%;
+        animation: bounce 1.4s infinite ease-in-out both;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    .typing-dot:nth-child(3) { animation-delay: 0s; }
+    
+    @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+    
+    /* Scrollbar styling */
+    #chat-messages {
+        overflow-y: auto;
+        height: 100%;
+    }
+    #chat-messages::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    #chat-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    #chat-messages::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+    }
+    
+    #chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+    
+    /* Remove base styles */
+    * {
+        box-sizing: border-box;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-message');
+    const chatMessages = document.getElementById('chat-messages');
+    const micBtn = document.getElementById('mic-btn');
+    const ttsBtn = document.getElementById('tts-btn');
+    
+    let isInitialState = true;
+    let recognition = null;
+    let recognizing = false;
+    let lastAiMessage = '';
+    let historyList = [];
+    
+    // Initialize user message display flag
+    window.allowUserMessages = false;
+    
+    // Auto-scroll to bottom of chat
+    function scrollToBottom() {
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 0);
+    }
+    
+    // Convert markdown to HTML
+    function parseMarkdown(text) {
+        // Check if text contains table syntax
+        if (text.includes('|')) {
+            try {
+                return marked.parse(text);
+            } catch (e) {
+                return escapeHtml(text);
+            }
+        }
+        // For other markdown-like content
+        try {
+            return marked.parse(text);
+        } catch (e) {
+            return escapeHtml(text);
+        }
+    }
+    
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+    
+    // Add a message to the chat (both user and AI messages can be displayed)
+    function addMessage(message, isUser = false) {
+        console.log(`addMessage called: isUser=${isUser}, message="${message.substring(0, 30)}..."`);
+        
+        // Remove initial welcome message on first message
+        if (isInitialState) {
+            chatMessages.innerHTML = '';
+            isInitialState = false;
+        }
+        
+        const messageRow = document.createElement('div');
+        messageRow.className = `message-row ${isUser ? 'user-message-row' : 'ai-message-row'}`;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+        
+        if (isUser) {
+            // User messages are plain text
+            messageDiv.textContent = message;
+        } else {
+            // AI messages can contain HTML/markdown
+            messageDiv.innerHTML = parseMarkdown(message);
+        }
+        
+        messageRow.appendChild(messageDiv);
+        chatMessages.appendChild(messageRow);
+        scrollToBottom();
+        
+        console.log(`Message added to DOM: ${isUser ? 'User' : 'AI'}`);
+        
+        // If it's an AI message, store it for TTS
+        if (!isUser) {
+            lastAiMessage = message;
+        }
+    }
+    
+    // Show typing indicator
+    function showTypingIndicator() {
+        const typingRow = document.createElement('div');
+        typingRow.className = 'message-row ai-message-row';
+        typingRow.id = 'typing-row';
+        
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typing-indicator';
+        
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'typing-dot';
+            typingDiv.appendChild(dot);
+        }
+        
+        typingRow.appendChild(typingDiv);
+        chatMessages.appendChild(typingRow);
+        scrollToBottom();
+    }
+    
+    // Hide typing indicator
+    function hideTypingIndicator() {
+        const typingRow = document.getElementById('typing-row');
+        if (typingRow) {
+            typingRow.remove();
+        }
+    }
+    
+    // Handle form submission
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const message = userInput.value.trim();
+        if (!message) return;
+        
+        // Display user message immediately
+        addMessage(message, true);
+        
+        // Clear input immediately
+        userInput.value = '';
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Send message to server
+        fetch('/ai-chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `message=${encodeURIComponent(message)}`
+        })
+        .then(response => {
+            console.log('Raw response:', response);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Parsed data:', data);
+            
+            // Remove typing indicator
+            hideTypingIndicator();
+            
+            // Add AI response to chat (but not user message)
+            if (data.response) {
+                console.log('AI response to display:', data.response);
+                addMessage(data.response, false);
+            } else if (data.error) {
+                console.log('Error to display:', data.error);
+                addMessage(data.error, false);
+            } else {
+                console.log('No response or error in data');
+                addMessage("No response received from server.", false);
+            }
+            
+            // Refresh history to include the new conversation
+            loadHistory();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            hideTypingIndicator();
+            addMessage("Sorry, I'm having trouble connecting to the server. Please try again later.", false);
+        });
+        
+        // Focus back to input
+        userInput.focus();
+    });
+
+    // Fetch and render chat history on load
+    function loadHistory() {
+        fetch('/chat/history')
+        .then(r => r.json())
+        .then(data => {
+            if (data && Array.isArray(data.history)) {
+                historyList = data.history || [];
+                // Keep the welcome message and don't display chat messages in the main area
+                // Only populate the history sidebar
+                renderHistorySidebar(historyList);
+            }
+        })
+        .catch(err => {
+            console.error('Failed to load history', err);
+        });
+    }
+    
+    // Separate function to load all chats into main area (for "Show all" button)
+    function loadAllChats() {
+        fetch('/chat/history')
+        .then(r => r.json())
+        .then(data => {
+            if (data && Array.isArray(data.history)) {
+                historyList = data.history || [];
+                chatMessages.innerHTML = '';
+                isInitialState = false;
+                
+                // Show all messages from all sessions (only AI responses)
+                historyList.forEach(item => {
+                    if (item.bot_message) {
+                        addMessage(item.bot_message, false);
+                    }
+                });
+            }
+        })
+        .catch(err => {
+            console.error('Failed to load history', err);
+        });
+    }
+
+    // Text-To-Speech helper
+    function speakText(text) {
+        try {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const clean = stripHtml(text).replace(/\n+/g, '\n');
+            const utter = new SpeechSynthesisUtterance(clean);
+            utter.lang = 'en-US';
+            window.speechSynthesis.speak(utter);
+        } catch (e) {
+            console.error('TTS failed', e);
+        }
+    }
+
+    function stripHtml(html) {
+        if (!html) return '';
+        const d = document.createElement('div');
+        d.innerHTML = html;
+        return d.textContent || d.innerText || '';
+    }
+
+    // Microphone (Speech-to-Text) setup
+    function startRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert('Speech recognition not supported in this browser.');
+            return;
+        }
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => { recognizing = true; micBtn.style.background = '#fee'; };
+        recognition.onend = () => { recognizing = false; micBtn.style.background = '#fff'; };
+        recognition.onerror = (e) => { console.error('Recognition error', e); recognizing = false; micBtn.style.background = '#fff'; };
+        recognition.onresult = (event) => {
+            let transcript = event.results[0][0].transcript.trim();
+            // Capitalize first letter
+            transcript = transcript.charAt(0).toUpperCase() + transcript.slice(1);
+            // Remove trailing punctuation (.,!? if present)
+            transcript = transcript.replace(/[\.,!?]+$/, '');
+            userInput.value = transcript;
+            // Submit the form automatically
+            chatForm.dispatchEvent(new Event('submit', {cancelable: true}));
+        };
+        recognition.start();
+    }
+
+    micBtn.addEventListener('click', () => {
+        if (recognizing && recognition) {
+            recognition.stop();
+            recognizing = false;
+            micBtn.style.background = '#fff';
+        } else {
+            startRecognition();
+        }
+    });
+
+    // Speak last AI message when clicking the TTS button
+    ttsBtn.addEventListener('click', () => {
+        if (lastAiMessage) speakText(lastAiMessage);
+    });
+
+    // Load past chat history only when history button is clicked
+    // loadHistory(); // Removed to prevent automatic loading
+
+    // History sidebar toggle
+    const historyBtn = document.getElementById('history-btn');
+    const historySidebar = document.getElementById('history-sidebar');
+    const historyOverlay = document.getElementById('history-overlay');
+    const closeHistoryBtn = document.getElementById('close-history');
+
+    // Load chat history into sidebar when History button is clicked
+    historyBtn.addEventListener('click', function() {
+        // Load history for sidebar only
+        loadHistory();
+        
+        // Open sidebar
+        historySidebar.style.transform = 'translateX(0)';
+        historyOverlay.style.opacity = '1';
+        historyOverlay.style.pointerEvents = 'auto';
+    });
+
+    // Remove sidebar open on history button
+    // historyBtn.addEventListener('click', openHistory); // REMOVE THIS LINE
+
+    function openHistory() {
+        historySidebar.style.transform = 'translateX(0)';
+        historyOverlay.style.opacity = '1';
+        historyOverlay.style.pointerEvents = 'auto';
+    }
+
+    function closeHistory() {
+        historySidebar.style.transform = 'translateX(-110%)';
+        historyOverlay.style.opacity = '0';
+        historyOverlay.style.pointerEvents = 'none';
+    }
+
+    historyBtn.addEventListener('click', openHistory);
+    closeHistoryBtn.addEventListener('click', closeHistory);
+    historyOverlay.addEventListener('click', closeHistory);
+
+    function renderHistorySidebar(list) {
+        const container = document.getElementById('history-list');
+        container.innerHTML = '';
+        if (!list || list.length === 0) {
+            container.innerHTML = '<div style="padding:1rem;color:#6b7280;">No history yet.</div>';
+            return;
+        }
+        
+        // Group messages by session (consecutive messages within a reasonable time gap)
+        const sessions = groupMessagesIntoSessions(list);
+        
+        // Display each session as a clickable item
+        sessions.forEach((session, index) => {
+            const sessionRow = document.createElement('div');
+            sessionRow.style.width = '100%';
+            sessionRow.style.textAlign = 'left';
+            sessionRow.style.padding = '0.8rem';
+            sessionRow.style.border = '1px solid #e5e7eb';
+            sessionRow.style.borderRadius = '0.5rem';
+            sessionRow.style.background = '#fff';
+            sessionRow.style.cursor = 'pointer';
+            sessionRow.style.marginBottom = '0.5rem';
+            sessionRow.style.transition = 'all 0.2s ease';
+            
+            sessionRow.onmouseover = () => {
+                sessionRow.style.background = '#f8fafc';
+                sessionRow.style.borderColor = '#d1d5db';
+            };
+            sessionRow.onmouseout = () => {
+                sessionRow.style.background = '#fff';
+                sessionRow.style.borderColor = '#e5e7eb';
+            };
+            
+            // Create session header
+            const sessionHeader = document.createElement('div');
+            sessionHeader.style.fontWeight = '600';
+            sessionHeader.style.color = '#111827';
+            sessionHeader.style.marginBottom = '0.5rem';
+            sessionHeader.style.cursor = 'pointer';
+            
+            const firstMessage = session.messages[0];
+            const messageCount = session.messages.length;
+            const time = firstMessage.timestamp ? new Date(firstMessage.timestamp).toLocaleString() : '';
+            const preview = stripHtml(firstMessage.user_message || firstMessage.bot_message).slice(0, 60) || 'New conversation';
+            
+            sessionHeader.innerHTML = `
+                <div style="font-size:0.9rem;color:#111827; font-weight:600; margin-bottom:0.25rem;">
+                    ${preview}
+                </div>
+                <div style="font-size:0.8rem;color:#6b7280; display:flex; justify-content:space-between;">
+                    <span>${messageCount} messages</span>
+                    <span>${time}</span>
+                </div>
+            `;
+            
+            // Add click handler for session header (loads all messages in session)
+            sessionHeader.addEventListener('click', (e) => {
+                e.stopPropagation();
+                console.log('Clicked session header with', session.messages.length, 'messages');
+                
+                // Clear chat and show all messages from this session
+                chatMessages.innerHTML = '';
+                isInitialState = false;
+                
+                // Allow user messages to be displayed for history loading
+                window.allowUserMessages = true;
+                
+                session.messages.forEach((item, index) => {
+                    console.log(`Loading message ${index}:`, item.user_message ? 'User: ' + item.user_message.slice(0, 30) : 'Bot: ' + item.bot_message?.slice(0, 30));
+                    
+                    if (item.user_message) {
+                        // Display user messages when loading from history
+                        console.log('Displaying user message:', item.user_message.slice(0, 30));
+                        addMessage(item.user_message, true);
+                    }
+                    if (item.bot_message) {
+                        console.log('Displaying AI message:', item.bot_message.slice(0, 30));
+                        addMessage(item.bot_message, false);
+                    }
+                });
+                
+                // Reset the flag after loading
+                setTimeout(() => {
+                    window.allowUserMessages = false;
+                }, 100);
+                
+                console.log('Session loaded, closing history sidebar');
+                closeHistory();
+            });
+            
+            // Add individual message items under the session
+            const messageList = document.createElement('div');
+            messageList.style.marginLeft = '1rem';
+            messageList.style.marginTop = '0.5rem';
+            
+            session.messages.forEach((message, msgIndex) => {
+                const messageItem = document.createElement('div');
+                messageItem.style.padding = '0.5rem';
+                messageItem.style.border = '1px solid #f0f0f0';
+                messageItem.style.borderRadius = '0.25rem';
+                messageItem.style.background = '#fafafa';
+                messageItem.style.cursor = 'pointer';
+                messageItem.style.marginBottom = '0.25rem';
+                messageItem.style.transition = 'all 0.2s ease';
+                messageItem.style.fontSize = '0.85rem';
+                
+                messageItem.onmouseover = () => {
+                    messageItem.style.background = '#e8f5e8';
+                };
+                messageItem.onmouseout = () => {
+                    messageItem.style.background = '#fafafa';
+                };
+                
+                const messageText = message.user_message || message.bot_message;
+                const isUser = message.user_message ? true : false;
+                const preview = stripHtml(messageText).slice(0, 40) || 'Empty message';
+                
+                messageItem.innerHTML = `
+                    <div style="${isUser ? 'color:#2563eb; font-weight:500;' : 'color:#059669; font-weight:500;'}">
+                        ${isUser ? '👤' : '🤖'} ${preview}
+                    </div>
+                `;
+                
+                messageItem.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    console.log('Clicked individual message:', isUser ? 'User' : 'AI', preview);
+                    
+                    // Clear chat and show the complete conversation (question + answer)
+                    chatMessages.innerHTML = '';
+                    isInitialState = false;
+                    
+                    // Allow user messages to be displayed for history loading
+                    window.allowUserMessages = true;
+                    
+                    // Find the complete conversation pair (user question + AI answer)
+                    const messageIndex = session.messages.indexOf(message);
+                    
+                    // If it's a user message, show it and the next AI response
+                    if (message.user_message) {
+                        console.log('Displaying user question and AI answer');
+                        // Display the user question
+                        addMessage(message.user_message, true);
+                        // Find and display the corresponding AI response
+                        for (let i = messageIndex; i < session.messages.length; i++) {
+                            const nextMessage = session.messages[i];
+                            if (nextMessage.bot_message) {
+                                console.log('Displaying AI answer:', nextMessage.bot_message.slice(0, 30));
+                                addMessage(nextMessage.bot_message, false);
+                                break;
+                            }
+                        }
+                    }
+                    // If it's an AI message, show it and the previous user question
+                    else if (message.bot_message) {
+                        console.log('Displaying AI answer with context');
+                        // Find the previous user question
+                        for (let i = messageIndex - 1; i >= 0; i--) {
+                            const prevMessage = session.messages[i];
+                            if (prevMessage.user_message) {
+                                console.log('Found user question:', prevMessage.user_message.slice(0, 30));
+                                // Display the user question first
+                                addMessage(prevMessage.user_message, true);
+                                break;
+                            }
+                        }
+                        // Display the AI message
+                        console.log('Displaying AI message:', message.bot_message.slice(0, 30));
+                        addMessage(message.bot_message, false);
+                    }
+                    
+                    // Reset the flag after loading
+                    setTimeout(() => {
+                        window.allowUserMessages = false;
+                    }, 100);
+                    
+                    console.log('Message pair loaded, closing history sidebar');
+                    closeHistory();
+                });
+                
+                messageList.appendChild(messageItem);
+            });
+            
+            // Assemble the session row
+            sessionRow.appendChild(sessionHeader);
+            sessionRow.appendChild(messageList);
+            container.appendChild(sessionRow);
+        });
+        
+        // Add event for Show all button
+        const showAllBtn = document.getElementById('show-all-history');
+        if (showAllBtn) {
+            showAllBtn.onclick = function() {
+                loadAllChats();
+                closeHistory();
+            };
+        }
+    }
+    
+    // Group messages into sessions based on time gaps
+    function groupMessagesIntoSessions(messages) {
+        const sessions = [];
+        let currentSession = null;
+        
+        console.log('Grouping messages into sessions:', messages.length, 'messages');
+        
+        messages.slice().reverse().forEach((message, index) => {
+            console.log('Processing message:', index, message.user_message ? 'User: ' + message.user_message.slice(0, 30) : 'Bot: ' + message.bot_message?.slice(0, 30));
+            
+            if (!currentSession) {
+                currentSession = {
+                    messages: [message],
+                    startTime: message.timestamp
+                };
+                sessions.push(currentSession);
+                console.log('Created new session with message:', message.user_message?.slice(0, 30));
+            } else {
+                // Check if this message is within a reasonable time gap from the session start
+                const timeDiff = new Date(currentSession.startTime) - new Date(message.timestamp);
+                const timeGapMinutes = timeDiff / (1000 * 60);
+                
+                console.log('Time gap for message:', timeGapMinutes, 'minutes');
+                
+                if (timeGapMinutes < 30) { // Within 30 minutes, same session
+                    currentSession.messages.push(message);
+                    console.log('Added to current session');
+                } else {
+                    // Start a new session
+                    currentSession = {
+                        messages: [message],
+                        startTime: message.timestamp
+                    };
+                    sessions.push(currentSession);
+                    console.log('Started new session with message:', message.user_message?.slice(0, 30));
+                }
+            }
+        });
+        
+        console.log('Final sessions created:', sessions.length, 'sessions');
+        sessions.forEach((session, i) => {
+            console.log(`Session ${i}: ${session.messages.length} messages, start:`, session.startTime);
+        });
+        
+        return sessions;
+    }
+    
+    // Auto-focus the input field
+    userInput.focus();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <!-- Profile Picture Upload -->
+                    <div class="position-relative d-inline-block mb-3">
+                        <img id="profileImage" 
+                             src="{{ url_for('static', filename=current_user.profile_image) }}" 
+                             class="rounded-circle border" 
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="Profile Picture">
+                        <div class="position-absolute bottom-0 end-0 bg-primary rounded-circle p-2" style="cursor: pointer;" onclick="document.getElementById('profileUpload').click()">
+                            <i class="fas fa-camera text-white"></i>
+                        </div>
+                        <input type="file" id="profileUpload" class="d-none" accept="image/*" onchange="previewAndUploadImage(event)">
+                    </div>
+                    <h4 class="mb-1">{{ current_user.username }}</h4>
+                    <p class="text-muted mb-0">{{ current_user.email }}</p>
+                    <div class="mt-3">
+                        <span class="badge bg-success">{{ 'Admin' if current_user.is_admin else 'Member' }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Health Summary -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Health Summary</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            BMI
+                            <span class="badge bg-primary rounded-pill">{% if assessment %}{{ "%.1f"|format(assessment.bmi) }} ({{ assessment.bmi_category }}){% else %}N/A{% endif %}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Weight Goal
+                            <span class="badge bg-success rounded-pill">{% if assessment %}{{ assessment.goal.replace('_', ' ')|title }}{% else %}Not set{% endif %}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Activity Level
+                            <span class="badge bg-info rounded-pill">{% if assessment %}{{ assessment.activity_level|title }}{% else %}Not set{% endif %}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">Profile Information</h3>
+                        <button type="button" class="btn btn-outline-primary" onclick="toggleEditMode()" id="editButton">
+                            <i class="fas fa-edit me-1"></i> Edit Profile
+                        </button>
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data" id="profileForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="age" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age" name="age" 
+                                       value="{{ assessment.age if assessment }}" disabled>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="weight" class="form-label">Weight (kg)</label>
+                                <input type="number" step="0.1" class="form-control" id="weight" name="weight" 
+                                       value="{{ assessment.weight if assessment }}" disabled>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="height" class="form-label">Height (cm)</label>
+                                <input type="number" step="0.1" class="form-control" id="height" name="height" 
+                                       value="{{ assessment.height if assessment }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender" disabled>
+                                    <option value="" {% if not assessment or not assessment.gender %}selected{% endif %}>Select Gender</option>
+                                    <option value="male" {% if assessment and assessment.gender == 'male' %}selected{% endif %}>Male</option>
+                                    <option value="female" {% if assessment and assessment.gender == 'female' %}selected{% endif %}>Female</option>
+                                    <option value="other" {% if assessment and assessment.gender == 'other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="activity_level" class="form-label">Activity Level</label>
+                                <select class="form-select" id="activity_level" name="activity_level" disabled>
+                                    <option value="" {% if not assessment or not assessment.activity_level %}selected{% endif %}>Select Activity Level</option>
+                                    <option value="sedentary" {% if assessment and assessment.activity_level == 'sedentary' %}selected{% endif %}>Sedentary</option>
+                                    <option value="light" {% if assessment and assessment.activity_level == 'light' %}selected{% endif %}>Lightly Active</option>
+                                    <option value="moderate" {% if assessment and assessment.activity_level == 'moderate' %}selected{% endif %}>Moderately Active</option>
+                                    <option value="active" {% if assessment and assessment.activity_level == 'active' %}selected{% endif %}>Very Active (exercise 6-7 days/week)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="goal" class="form-label">Health Goal</label>
+                            <select class="form-select" id="goal" name="goal" disabled>
+                                <option value="" {% if not assessment or not assessment.goal %}selected{% endif %}>Select Goal</option>
+                                <option value="weight_loss" {% if assessment and assessment.goal == 'weight_loss' %}selected{% endif %}>Weight Loss</option>
+                                <option value="maintain" {% if current_user.goal == 'maintain' %}selected{% endif %}>Maintain Weight</option>
+                                <option value="muscle_gain" {% if current_user.goal == 'muscle_gain' %}selected{% endif %}>Muscle Gain</option>
+                                <option value="improve_health" {% if current_user.goal == 'improve_health' %}selected{% endif %}>Improve Overall Health</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="dietary_restrictions" class="form-label">Dietary Restrictions</label>
+                            <textarea class="form-control" id="dietary_restrictions" name="dietary_restrictions" 
+                                     rows="2" disabled>{{ current_user.dietary_restrictions if current_user.dietary_restrictions }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="health_conditions" class="form-label">Health Conditions</label>
+                            <textarea class="form-control" id="health_conditions" name="health_conditions" 
+                                     rows="2" disabled>{{ current_user.health_conditions if current_user.health_conditions }}</textarea>
+                        </div>
+                        
+                        <div class="d-none" id="saveButtonContainer">
+                            <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="cancelEdit()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-image-upload {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .profile-image-upload:hover {
+        opacity: 0.8;
+    }
+    .profile-image-wrapper {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto;
+        border: 3px solid #0d6efd;
+    }
+</style>
+
+<script>
+    function toggleEditMode() {
+        const formInputs = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm textarea');
+        const editButton = document.getElementById('editButton');
+        const saveButtonContainer = document.getElementById('saveButtonContainer');
+        
+        if (editButton.innerHTML.includes('Edit Profile')) {
+            // Enable editing
+            formInputs.forEach(input => {
+                if (input.id !== 'profileImage') {
+                    input.disabled = false;
+                }
+            });
+            editButton.classList.add('d-none');
+            saveButtonContainer.classList.remove('d-none');
+            saveButtonContainer.classList.add('d-flex');
+        }
+    }
+    
+    function cancelEdit() {
+        const formInputs = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm textarea');
+        const editButton = document.getElementById('editButton');
+        const saveButtonContainer = document.getElementById('saveButtonContainer');
+        
+        // Disable all inputs
+        formInputs.forEach(input => {
+            if (input.id !== 'profileImage') {
+                input.disabled = true;
+            }
+        });
+        
+        // Reset form to original values (you might want to implement this with actual data from server)
+        document.getElementById('profileForm').reset();
+        
+        // Toggle buttons
+        editButton.classList.remove('d-none');
+        saveButtonContainer.classList.add('d-none');
+    }
+    
+    function previewAndUploadImage(event) {
+        const input = event.target;
+        const reader = new FileReader();
+        
+        reader.onload = function() {
+            const img = document.getElementById('profileImage');
+            img.src = reader.result;
+            
+            // Upload the image to the server
+            uploadProfilePicture(input.files[0]);
+        };
+        
+        if (input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    // Function to handle profile picture upload
+    async function uploadProfilePicture(file) {
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        
+        try {
+            const response = await fetch('/upload_profile_picture', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to upload profile picture');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Update the profile picture with the new URL from server
+                document.getElementById('profileImage').src = result.image_url;
+                // Show success message
+                showToast('Profile picture updated successfully!', 'success');
+            } else {
+                throw new Error(result.error || 'Failed to upload profile picture');
+            }
+            
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            showToast('Failed to upload profile picture. Please try again.', 'danger');
+            // Revert to original image on error
+            location.reload();
+        }
+    }
+    
+    // Helper function to show toast messages
+    function showToast(message, type = 'info') {
+        // Create toast container if it doesn't exist
+        let toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toastContainer';
+            toastContainer.className = 'position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '1050';
+            document.body.appendChild(toastContainer);
+        }
+        
+        // Create toast element
+        const toastId = 'toast-' + Date.now();
+        const toastHtml = `
+            <div id="${toastId}" class="toast show align-items-center text-white bg-${type === 'success' ? 'success' : type === 'danger' ? 'danger' : 'primary'} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.remove();
+            }
+        }, 3000);
+    }
+</script>
+{% endblock %}

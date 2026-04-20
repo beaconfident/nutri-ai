@@ -1,0 +1,541 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                <!-- Header with user info -->
+                <div class="bg-success text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="h3 mb-0">Your Health Assessment Results</h1>
+                            <p class="mb-0">Personalized nutrition and health insights</p>
+                        </div>
+                        <img src="{{ url_for('static', filename='images/health-report.png') }}" alt="Health Report"
+                            style="height: 80px;">
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Summary Card -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 text-center mb-3 mb-md-0">
+                                    <div class="display-4 fw-bold text-success">{{ "%.1f"|format(bmi) }}</div>
+                                    <div class="text-muted">BMI</div>
+                                    <div class="mt-2">
+                                        <span
+                                            class="badge bg-{{ 'success' if bmi_category == 'Normal weight' else 'warning' if bmi_category == 'Overweight' else 'danger' if bmi_category == 'Obese' else 'info' }}">
+                                            {{ bmi_category }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-6 col-md-4 mb-3">
+                                            <div class="text-muted small">Age</div>
+                                            <div class="fw-bold">{{ current_user.age }} years</div>
+                                        </div>
+                                        <div class="col-6 col-md-4 mb-3">
+                                            <div class="text-muted small">Weight</div>
+                                            <div class="fw-bold">{{ "%.1f"|format(current_user.weight) }} kg</div>
+                                        </div>
+                                        <div class="col-6 col-md-4 mb-3">
+                                            <div class="text-muted small">Height</div>
+                                            <div class="fw-bold">{{ "%.1f"|format(current_user.height) }} cm</div>
+                                        </div>
+                                        <div class="col-6 col-md-4 mb-3">
+                                            <div class="text-muted small">Activity Level</div>
+                                            <div class="fw-bold text-capitalize">{{
+                                                current_user.activity_level|replace('_', ' ') }}</div>
+                                        </div>
+                                        <div class="col-6 col-md-4 mb-3">
+                                            <div class="text-muted small">Daily Calories</div>
+                                            <div class="fw-bold">{{ daily_calories }} kcal</div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <div class="text-muted small">Goal</div>
+                                            <div class="fw-bold text-capitalize">{{ current_user.goal|replace('_', ' ')
+                                                }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BMI Explanation -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="fas fa-chart-line text-success me-2"></i>Understanding Your BMI
+                            </h5>
+                            <style>
+                                .bmi-progress {
+                                    height: 20px;
+                                }
+
+                                .bmi-progress .progress-bar {
+                                    font-weight: 500;
+                                }
+                            </style>
+                            <div class="progress mb-3 bmi-progress">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 15%"
+                                    aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">Underweight</div>
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 40%"
+                                    aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">Normal</div>
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 25%"
+                                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Overweight</div>
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
+                                    aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">Obese</div>
+                            </div>
+                            <p class="mb-0">
+                                Your BMI of <strong>{{ "%.1f"|format(bmi) }}</strong> is in the <strong>{{ bmi_category
+                                    }}</strong> range.
+                                {% if bmi_category == 'Normal weight' %}
+                                This is a healthy weight range for your height. Maintain your weight with a balanced
+                                diet and regular exercise.
+                                {% elif bmi_category == 'Underweight' %}
+                                You may need to gain weight for optimal health. Consider consulting with a healthcare
+                                provider.
+                                {% elif bpi_category == 'Overweight' %}
+                                You may be at increased risk for certain health conditions. Losing 5-10% of your body
+                                weight can have significant health benefits.
+                                {% else %}
+                                You may be at high risk for obesity-related health conditions. We recommend consulting
+                                with a healthcare provider for personalized advice.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Nutrition Plan -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="fas fa-utensils text-success me-2"></i>Your Daily Nutrition Goals
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="display-5 fw-bold text-success">{{ daily_calories }}</div>
+                                            <div class="text-muted">Calories</div>
+                                            <div class="small mt-2">per day</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="display-5 fw-bold text-success">{{ macros.protein|int }}g</div>
+                                            <div class="text-muted">Protein</div>
+                                            <div class="small mt-2">{{ macros.protein_percent }}% of calories</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="display-5 fw-bold text-success">{{ macros.carbs|int }}g</div>
+                                            <div class="text-muted">Carbs</div>
+                                            <div class="small mt-2">{{ macros.carbs_percent }}% of calories</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="display-5 fw-bold text-success">{{ macros.fat|int }}g</div>
+                                            <div class="text-muted">Fat</div>
+                                            <div class="small mt-2">{{ macros.fat_percent }}% of calories</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="display-5 fw-bold text-success">{{ macros.fiber|int }}g</div>
+                                            <div class="text-muted">Fiber</div>
+                                            <div class="small mt-2">Recommended daily intake</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <style>
+                                .macro-progress {
+                                    height: 30px;
+                                }
+
+                                .macro-progress .progress-bar {
+                                    font-weight: 500;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                }
+                            </style>
+                            <div class="mt-4">
+                                <h6 class="mb-3">Macronutrient Distribution</h6>
+                                <div class="progress macro-progress">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        style="width: {{ macros.protein_percent }}%" title="Protein">{{
+                                        macros.protein_percent }}%</div>
+                                    <div class="progress-bar bg-info" role="progressbar"
+                                        style="width: {{ macros.carbs_percent }}%" title="Carbs">{{ macros.carbs_percent
+                                        }}%</div>
+                                    <div class="progress-bar bg-warning" role="progressbar"
+                                        style="width: {{ macros.fat_percent }}%" title="Fat">{{ macros.fat_percent }}%
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2 small text-muted">
+                                    <span>Protein</span>
+                                    <span>Carbs</span>
+                                    <span>Fat</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meal Plan -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">
+                                <i class="fas fa-utensils text-success me-2"></i>Suggested Meal Plan
+                            </h5>
+
+                            <div class="accordion" id="mealPlanAccordion">
+                                <!-- Breakfast -->
+                                <div class="accordion-item mb-3 border-0 shadow-sm">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button bg-light" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#breakfastCollapse"
+                                            aria-expanded="true" aria-controls="breakfastCollapse">
+                                            <i class="fas fa-coffee text-success me-2"></i> Breakfast
+                                            <span class="ms-auto badge bg-success rounded-pill">{{
+                                                meal_plan.breakfast.calories }} cal</span>
+                                        </button>
+                                    </h2>
+                                    <div id="breakfastCollapse" class="accordion-collapse collapse show"
+                                        aria-labelledby="headingOne" data-bs-parent="#mealPlanAccordion">
+                                        <div class="accordion-body">
+                                            <h6>{{ meal_plan.breakfast.name }}</h6>
+                                            <p class="text-muted">{{ meal_plan.breakfast.description }}</p>
+                                            <div class="row g-2">
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Protein</div>
+                                                        <div class="fw-bold">{{ meal_plan.breakfast.protein }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Carbs</div>
+                                                        <div class="fw-bold">{{ meal_plan.breakfast.carbs }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Fat</div>
+                                                        <div class="fw-bold">{{ meal_plan.breakfast.fat }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Fiber</div>
+                                                        <div class="fw-bold">{{ meal_plan.breakfast.fiber }}g</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lunch -->
+                                <div class="accordion-item mb-3 border-0 shadow-sm">
+                                    <h2 class="accordion-header" id="headingTwo">
+                                        <button class="accordion-button collapsed bg-light" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#lunchCollapse"
+                                            aria-expanded="false" aria-controls="lunchCollapse">
+                                            <i class="fas fa-hamburger text-success me-2"></i> Lunch
+                                            <span class="ms-auto badge bg-success rounded-pill">{{
+                                                meal_plan.lunch.calories }} cal</span>
+                                        </button>
+                                    </h2>
+                                    <div id="lunchCollapse" class="accordion-collapse collapse"
+                                        aria-labelledby="headingTwo" data-bs-parent="#mealPlanAccordion">
+                                        <div class="accordion-body">
+                                            <h6>{{ meal_plan.lunch.name }}</h6>
+                                            <p class="text-muted">{{ meal_plan.lunch.description }}</p>
+                                            <div class="row g-2">
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Protein</div>
+                                                        <div class="fw-bold">{{ meal_plan.lunch.protein }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Carbs</div>
+                                                        <div class="fw-bold">{{ meal_plan.lunch.carbs }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Fat</div>
+                                                        <div class="fw-bold">{{ meal_plan.lunch.fat }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Fiber</div>
+                                                        <div class="fw-bold">{{ meal_plan.lunch.fiber }}g</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dinner -->
+                                <div class="accordion-item border-0 shadow-sm">
+                                    <h2 class="accordion-header" id="headingThree">
+                                        <button class="accordion-button collapsed bg-light" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#dinnerCollapse"
+                                            aria-expanded="false" aria-controls="dinnerCollapse">
+                                            <i class="fas fa-drumstick-bite text-success me-2"></i> Dinner
+                                            <span class="ms-auto badge bg-success rounded-pill">{{
+                                                meal_plan.dinner.calories }} cal</span>
+                                        </button>
+                                    </h2>
+                                    <div id="dinnerCollapse" class="accordion-collapse collapse"
+                                        aria-labelledby="headingThree" data-bs-parent="#mealPlanAccordion">
+                                        <div class="accordion-body">
+                                            <h6>{{ meal_plan.dinner.name }}</h6>
+                                            <p class="text-muted">{{ meal_plan.dinner.description }}</p>
+                                            <div class="row g-2">
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Protein</div>
+                                                        <div class="fw-bold">{{ meal_plan.dinner.protein }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Carbs</div>
+                                                        <div class="fw-bold">{{ meal_plan.dinner.carbs }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Fat</div>
+                                                        <div class="fw-bold">{{ meal_plan.dinner.fat }}g</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <div class="bg-light p-2 rounded text-center">
+                                                        <div class="small text-muted">Fiber</div>
+                                                        <div class="fw-bold">{{ meal_plan.dinner.fiber }}g</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                This is a sample meal plan. For a personalized meal plan tailored to your specific
+                                needs,
+                                consult with a registered dietitian or nutritionist.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="fas fa-lightbulb text-success me-2"></i>Personalized Recommendations
+                            </h5>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;">
+                                                <i class="fas fa-utensils"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-1">Dietary Advice</h6>
+                                            <p class="small mb-0 text-muted">
+                                                {% if bmi_category == 'Normal weight' %}
+                                                Maintain your healthy weight with a balanced diet rich in whole foods,
+                                                lean proteins, and plenty of vegetables.
+                                                {% elif bmi_category == 'Underweight' %}
+                                                Focus on nutrient-dense foods and consider increasing your calorie
+                                                intake with healthy fats and proteins.
+                                                {% else %}
+                                                Focus on portion control, increase your vegetable intake, and reduce
+                                                processed foods and added sugars.
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;">
+                                                <i class="fas fa-dumbbell"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-1">Exercise Tips</h6>
+                                            <p class="small mb-0 text-muted">
+                                                Aim for at least 150 minutes of moderate-intensity exercise per week,
+                                                including strength training twice a week.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;">
+                                                <i class="fas fa-tint"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-1">Hydration</h6>
+                                            <p class="small mb-0 text-muted">
+                                                Drink at least {{ (current_user.weight * 0.033)|int }} liters of water
+                                                daily.
+                                                Increase intake if you're physically active.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;">
+                                                <i class="fas fa-moon"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-1">Sleep & Recovery</h6>
+                                            <p class="small mb-0 text-muted">
+                                                Aim for 7-9 hours of quality sleep per night to support your health
+                                                goals and recovery.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ url_for('health_assessment') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-edit me-2"></i>Edit Assessment
+                        </a>
+                        <a href="{{ url_for('chat') }}" class="btn btn-success">
+                            <i class="fas fa-robot me-2"></i>Chat with AI Nutritionist
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styling for the results page */
+    .card {
+        margin-bottom: 1.5rem;
+        border: none;
+        border-radius: 0.75rem;
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background-color: #f8f9fa;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #198754;
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0, 0, 0, 0.125);
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #198754;
+        border-radius: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .display-5 {
+            font-size: 1.75rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+    }
+</style>
+
+<script>
+    // Auto-expand the first accordion item
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Print functionality
+        document.getElementById('printBtn').addEventListener('click', function () {
+            window.print();
+        });
+    });
+</script>
+{% endblock %}

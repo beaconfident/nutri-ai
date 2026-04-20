@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 bg-gradient-success text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4">About NutriAI</h1>
+                <p class="lead mb-4">Your Intelligent Nutrition & Health Companion</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <div class="text-center">
+                        <div class="bg-white bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                            <i class="fas fa-brain fa-2x"></i>
+                        </div>
+                        <h4>AI-Powered</h4>
+                        <p>Smart nutrition guidance</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-white bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                            <i class="fas fa-heartbeat fa-2x"></i>
+                        </div>
+                        <h4>Personalized</h4>
+                        <p>Tailored to your health</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-white bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <h4>Secure</h4>
+                        <p>Your data protected</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold mb-4">Our Mission</h2>
+                    <p class="lead fs-5">Empowering healthier lives through intelligent, personalized nutrition guidance</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-bullseye fa-2x text-success"></i>
+                                </div>
+                                <h4 class="mb-3">Accessibility</h4>
+                                <p class="text-muted">Making professional nutrition guidance available to everyone, regardless of their health background or technical knowledge.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-microscope fa-2x text-success"></i>
+                                </div>
+                                <h4 class="mb-3">Science-Based</h4>
+                                <p class="text-muted">Combining cutting-edge AI technology with evidence-based nutritional science for reliable recommendations.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-chart-line fa-2x text-success"></i>
+                                </div>
+                                <h4 class="mb-3">Progress Tracking</h4>
+                                <p class="text-muted">Helping users monitor their health journey with comprehensive tracking tools and insights.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Platform Features -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold mb-4">Comprehensive Platform Features</h2>
+                    <p class="lead fs-5">Everything you need for your health and nutrition journey</p>
+                </div>
+                
+                <div class="row g-4">
+                    <!-- Dashboard -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-tachometer-alt fa-lg text-primary"></i>
+                                    </div>
+                                    <h5 class="mb-0">Personal Dashboard</h5>
+                                </div>
+                                <p class="card-text">Your personalized health hub with real-time metrics, quick actions, and progress tracking. View your health status, meal plans, and activity all in one place.</p>
+                                <ul class="list-unstyled mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i> Dynamic health status tracking</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Quick action buttons</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Personalized recommendations</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Activity timeline</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Health Assessment -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-clipboard-check fa-lg text-info"></i>
+                                    </div>
+                                    <h5 class="mb-0">Health Assessment</h5>
+                                </div>
+                                <p class="card-text">Comprehensive health evaluation with BMI calculation, calorie estimation, and personalized recommendations based on your unique profile.</p>
+                                <ul class="list-unstyled mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i> BMI and health metrics</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Daily calorie needs</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Personalized diet plans</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Health goal tracking</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Chat -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-robot fa-lg text-success"></i>
+                                    </div>
+                                    <h5 class="mb-0">AI Nutrition Assistant</h5>
+                                </div>
+                                <p class="card-text">24/7 access to intelligent nutrition guidance powered by advanced AI technology. Get instant answers to your health questions.</p>
+                                <ul class="list-unstyled mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i> Voice interaction support</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Conversation history</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Health-focused responses</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Real-time assistance</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Management -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-user fa-lg text-warning"></i>
+                                    </div>
+                                    <h5 class="mb-0">Profile Management</h5>
+                                </div>
+                                <p class="card-text">Manage your personal health information, dietary preferences, and goals. Keep your profile updated for better recommendations.</p>
+                                <ul class="list-unstyled mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i> Personal information</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Dietary preferences</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Health goals</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Progress tracking</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Health Calendar -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-calendar-alt fa-lg text-danger"></i>
+                                    </div>
+                                    <h5 class="mb-0">Health Calendar</h5>
+                                </div>
+                                <p class="card-text">Track your health milestones, appointments, and progress over time. Visual timeline of your wellness journey with achievements and reminders.</p>
+                                <ul class="list-unstyled mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i> Milestone tracking</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Progress visualization</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Achievement system</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Health reminders</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Panel -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-cogs fa-lg text-secondary"></i>
+                                    </div>
+                                    <h5 class="mb-0">Admin Panel</h5>
+                                </div>
+                                <p class="card-text">Comprehensive administrative tools for managing users, monitoring system health, and analyzing platform usage patterns.</p>
+                                <ul class="list-unstyled mt-3">
+                                    <li><i class="fas fa-check text-success me-2"></i> User management</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> System analytics</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Data management</li>
+                                    <li><i class="fas fa-check text-success me-2"></i> Security controls</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technology Stack -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold mb-4">Advanced Technology Stack</h2>
+                    <p class="lead fs-5">Built with cutting-edge technologies for reliability and performance</p>
+                </div>
+                
+                <div class="row g-4">
+                    <!-- Backend Technologies -->
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-server me-2"></i>Backend Technologies</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Python 3.8+</strong> - Core programming language with advanced features</li>
+                                    <li class="mb-2"><strong>Flask Framework</strong> - Robust web application framework</li>
+                                    <li class="mb-2"><strong>Flask-Login</strong> - Secure user session management</li>
+                                    <li class="mb-2"><strong>Flask-SQLAlchemy</strong> - Powerful database ORM</li>
+                                    <li class="mb-2"><strong>SQLite Database</strong> - Lightweight, reliable data storage</li>
+                                    <li class="mb-2"><strong>Werkzeug</strong> - Security utilities and middleware</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI & Frontend -->
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-brain me-2"></i>AI & Frontend</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Groq API</strong> - Advanced AI for intelligent responses</li>
+                                    <li class="mb-2"><strong>Bootstrap 5</strong> - Modern, responsive UI framework</li>
+                                    <li class="mb-2"><strong>JavaScript ES6+</strong> - Interactive functionality and animations</li>
+                                    <li class="mb-2"><strong>HTML5/CSS3</strong> - Modern web standards and styling</li>
+                                    <li class="mb-2"><strong>Font Awesome</strong> - Professional icon library</li>
+                                    <li class="mb-2"><strong>Speech Synthesis</strong> - Text-to-speech capabilities</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- User Journey -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold mb-4">Your Health Journey with NutriAI</h2>
+                    <p class="lead fs-5">A seamless experience from registration to achieving your health goals</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-user-plus text-primary me-2"></i>Getting Started</h5>
+                                <p>Create your account and complete your health assessment to receive personalized recommendations tailored to your unique needs and goals.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-chart-line text-success me-2"></i>Tracking Progress</h5>
+                                <p>Monitor your health metrics through our comprehensive dashboard, track meal adherence, and celebrate achievements as you work towards your wellness goals.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-comments text-info me-2"></i>AI Guidance</h5>
+                                <p>Interact with our AI nutritionist 24/7 for instant answers to your health questions, recipe suggestions, and personalized advice.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-trophy text-warning me-2"></i>Achieving Goals</h5>
+                                <p>Reach your health objectives with our intelligent meal plans, progress tracking, and continuous AI support throughout your wellness journey.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-gradient-success text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Transform Your Health?</h2>
+        <p class="lead mb-4">Join thousands of users who have already started their wellness journey with NutriAI</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            {% if current_user.is_authenticated %}
+                <a href="/" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-home me-2"></i>Go to Dashboard
+                </a>
+                <a href="/ai-chat" class="btn btn-outline-light btn-lg px-4">
+                    <i class="fas fa-robot me-2"></i>Chat with AI
+                </a>
+            {% else %}
+                <a href="/register" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-rocket me-2"></i>Get Started Free
+                </a>
+                <a href="/login" class="btn btn-outline-light btn-lg px-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.hero-icon {
+    transition: transform 0.3s ease;
+}
+
+.hero-icon:hover {
+    transform: scale(1.1);
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.team-img-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.team-img-container img {
+    transition: transform 0.3s ease;
+}
+
+.team-img-container:hover img {
+    transform: scale(1.05);
+}
+</style>
+
+{% endblock %}
